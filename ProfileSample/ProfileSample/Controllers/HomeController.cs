@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ProfileSample.DAL;
+using ProfileSample.Data;
 using ProfileSample.Models;
 
 namespace ProfileSample.Controllers
@@ -13,28 +14,28 @@ namespace ProfileSample.Controllers
     {
         public ActionResult Index()
         {
-            var context = new ProfileSampleEntities();
+            var images = TryGetImages();
 
-            var sources = context.ImgSources.Take(20).Select(x => x.Id);
-            
-            var model = new List<ImageModel>();
-
-            foreach (var id in sources)
-            {
-                var item = context.ImgSources.Find(id);
-
-                var obj = new ImageModel()
-                {
-                    Name = item.Name,
-                    Data = item.Data
-                };
-
-                model.Add(obj);
-            } 
-
-            return View(model);
+            return View(images);//?
         }
 
+        private List<ImageModel> TryGetImages()
+        {
+            try
+            {
+                using (var repository = new ImageRepository())
+                {
+                    return repository.GetFirstImageModels(20);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log
+                throw;
+            }
+        }
+        
+        
         public ActionResult Convert()
         {
             var files = Directory.GetFiles(Server.MapPath("~/Content/Img"), "*.jpg");

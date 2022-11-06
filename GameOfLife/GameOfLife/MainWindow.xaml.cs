@@ -49,6 +49,7 @@ namespace GameOfLife
             for (int i = 0; i < 2; i++)
             {
                 adWindow[i].Closed -= AdWindowOnClosed;
+                adWindow[i].Unsubscribe();
                 adWindow[i] = null;
             }
             
